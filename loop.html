@@ -1,0 +1,108 @@
+
+
+<script src="jquery-1.11.1.min.js">
+
+</script> 
+
+
+
+
+
+<foreach data="Object.Users">
+	<print data='user'></print>
+</foreach>
+
+
+
+<foreach data="store.systemdata">
+	<print data='name'></print>
+	<print data='age'></print>
+	<foreach data="things">
+		<print data=''></print>
+	</foreach>
+</foreach>
+
+
+
+<a href='#'> click </a> 
+
+
+
+<script>
+var store =  {
+	userdata : {
+		name : 'manish',
+		age : 30
+		}, 
+	systemdata : [{
+		name : 'bansal123',
+		age : 50,
+		things : ['cat', 'dog', 'monkey']
+		},
+		{
+		name : 'manish',
+		age : 30
+		}		
+		]
+		
+}
+
+Object = {Users : ['cat', 'dog', 'monkey']};
+
+$(document).ready(function() {
+	for(i=0;i<=10;i++){
+		updateForEach();
+	}
+	
+	
+});
+
+
+function updateForEach(){
+	$("foreach").each(function(){
+			
+			if($(this).attr("done")=='true'){return true;}
+			var $foreachTag = $(this); 
+			var htmlData = $foreachTag.html();
+			$foreachTag.html('');
+			
+			var objectName = "";
+			if($foreachTag[0].hasAttribute('ref')){
+				 objectName = $.trim($foreachTag.attr("ref")); 
+			}else {
+				 objectName = $.trim($foreachTag.attr("data")); 
+			}
+			var objectArray 
+			try{
+				objectArray = eval(objectName);
+				if(typeof objectArray == "undefined"){
+					$foreachTag.remove();	
+					return true; 
+				}
+			}catch (ex){
+				return true; 
+			}
+			
+			objectArray.forEach(function (val,index,array){
+				var html = $.parseHTML(htmlData);
+				$.each(html, function(i,el){
+					if(el.nodeName!='#text'){
+						if(el.hasAttribute('data')){
+							arrayName = el.getAttribute('data'); 
+							if(arrayName != ""){
+								el.setAttribute('ref', objectName + '[' + index +'].' +  arrayName);
+							}else {
+								el.setAttribute('ref', objectName + '[' + index +']');
+							}
+							
+						}
+					}
+				});
+				$foreachTag.append(html);
+			});
+			
+			$foreachTag.attr('done','true');
+		});
+}
+
+</script>
